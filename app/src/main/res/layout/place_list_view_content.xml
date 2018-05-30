@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:background="@android:color/white"
+    tools:showIn="@layout/place_list_view">
+
+    <EditText
+        android:id="@+id/place_list_search_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/dimen_16dp"
+        android:layout_marginRight="@dimen/dimen_16dp"
+        android:layout_marginTop="@dimen/dimen_16dp"
+        android:drawableLeft="@drawable/place_search_24dp"
+        android:drawablePadding="@dimen/dimen_8dp"
+        android:drawableStart="@drawable/place_search_24dp"
+        android:fontFamily="sans-serif-light"
+        android:hint="@string/place_list_search_field_hint"
+        android:inputType="textCapWords"
+        android:textColorHint="@color/colorHint" />
+
+    <ImageButton
+        android:id="@+id/place_list_close_button"
+        style="?android:attr/buttonBarButtonStyle"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignBottom="@+id/place_list_search_field"
+        android:layout_alignEnd="@+id/place_list_search_field"
+        android:layout_alignRight="@+id/place_list_search_field"
+        android:layout_alignTop="@+id/place_list_search_field"
+        android:contentDescription="@string/iv_text"
+        android:src="@drawable/baseline_close_black_24"
+        android:tint="@color/colorTint" />
+
+    <ProgressBar
+        android:id="@+id/place_list_progress"
+        android:layout_below="@id/place_list_search_field"
+        android:layout_alignLeft="@+id/place_list_search_field"
+        android:layout_alignStart="@+id/place_list_search_field"
+        android:layout_alignEnd="@+id/place_list_search_field"
+        android:layout_alignRight="@+id/place_list_search_field"
+        android:layout_marginLeft="@dimen/dimen_2dp"
+        android:layout_marginRight="@dimen/dimen_2dp"
+        android:layout_marginTop="-14dp"
+        android:theme="@style/LinearProgress"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/place_list_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/place_list_search_field"
+        android:paddingTop="@dimen/dimen_8dp"
+        android:paddingBottom="@dimen/dimen_48dp" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_1dp"
+        android:background="@color/colorDivider" />
+
+    <TextView
+        android:id="@+id/place_list_no_data_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="@dimen/dimen_32dp"
+        android:layout_marginRight="@dimen/dimen_32dp"
+        android:drawablePadding="@dimen/dimen_16dp"
+        android:drawableTop="@drawable/place_search_64dp"
+        android:fontFamily="sans-serif-thin"
+        android:gravity="center_horizontal"
+        android:text="@string/place_list_no_results"
+        android:textColor="@color/colorTint"
+        android:textSize="@dimen/dimen_16sp" />
+
+</RelativeLayout>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/place_list_menu_change_poi"
+        android:title="@string/action_label_change_poi"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/place_list_menu_my_location_poi"
+        android:title="@string/action_label_use_my_location"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/place_list_menu_my_favs"
+        android:title="@string/action_label_use_my_favs"
+        app:showAsAction="never" />
+
+</menu>

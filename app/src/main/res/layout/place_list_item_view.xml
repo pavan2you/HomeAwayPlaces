@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/place_list_item_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/place_list_item_icon"
+        android:layout_width="@dimen/dimen_48dp"
+        android:layout_height="@dimen/dimen_48dp"
+        android:layout_margin="@dimen/dimen_16dp"
+        android:contentDescription="@string/iv_text"
+        android:background="@drawable/place_placeholder_bg"
+        android:src="@drawable/place_placeholder" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/place_list_item_stats_layout"
+        android:layout_toStartOf="@+id/place_list_item_stats_layout"
+        android:layout_marginTop="@dimen/dimen_16dp"
+        android:layout_marginBottom="@dimen/dimen_16dp"
+        android:layout_toEndOf="@id/place_list_item_icon"
+        android:layout_toRightOf="@id/place_list_item_icon"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/place_list_item_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_marginRight="@dimen/dimen_16dp"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
+            tools:text="Seattle center"
+            android:textColor="@color/colorLinePrimary"
+            android:textSize="@dimen/dimen_14sp" />
+
+        <TextView
+            android:id="@+id/place_list_item_address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_marginRight="@dimen/dimen_16dp"
+            android:layout_marginTop="@dimen/dimen_4dp"
+            android:ellipsize="middle"
+            android:fontFamily="sans-serif-light"
+            android:singleLine="true"
+            tools:text="#2, Seattle center, NorthEast"
+            android:textColor="@color/colorLineSecondary"
+            android:textSize="@dimen/dimen_10sp" />
+
+        <TextView
+            android:id="@+id/place_list_item_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_marginRight="@dimen/dimen_16dp"
+            android:layout_marginTop="@dimen/dimen_4dp"
+            android:fontFamily="sans-serif-thin"
+            tools:text="Coffee Shop"
+            android:textColor="@color/colorLinePrimary"
+            android:textSize="@dimen/dimen_10sp" />
+
+        <TextView
+            android:id="@+id/place_list_item_website"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dimen_32dp"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_marginRight="@dimen/dimen_16dp"
+            android:gravity="center_vertical"
+            android:fontFamily="sans-serif-medium"
+            tools:text="http://www.google.com"
+            android:textColor="@color/colorHyperLink"
+            android:textSize="@dimen/dimen_11sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/place_list_item_stats_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/place_list_item_fav_icon"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="@dimen/dimen_48dp"
+            android:layout_height="@dimen/dimen_48dp"
+            android:layout_gravity="end|top"
+            android:contentDescription="@string/iv_text"
+            android:scaleType="centerInside"
+            android:src="@drawable/outline_favorite_border_black_24" />
+
+        <TextView
+            android:id="@+id/place_list_item_distance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_marginRight="@dimen/dimen_16dp"
+            android:layout_marginTop="-8dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="end"
+            tools:text="200m"
+            android:textColor="@color/colorLinePrimary"
+            android:textSize="@dimen/dimen_10sp" />
+
+        <TextView
+            android:id="@+id/place_list_item_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginEnd="@dimen/dimen_16dp"
+            android:layout_marginRight="@dimen/dimen_16dp"
+            android:layout_marginTop="@dimen/dimen_4dp"
+            android:drawableLeft="@drawable/outline_star_rate_black_18"
+            android:drawableStart="@drawable/outline_star_rate_black_18"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="end|center_vertical"
+            tools:text="4.2"
+            android:textColor="@color/colorLinePrimary"
+            android:textSize="@dimen/dimen_10sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_0_5dp"
+        android:layout_marginTop="@dimen/dimen_8dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorDivider" />
+
+</RelativeLayout>
