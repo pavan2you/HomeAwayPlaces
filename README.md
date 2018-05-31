@@ -1,7 +1,11 @@
 # HomeAwayPlaces
 The app lets the user search for near by places around Seattle, Washington. App is built using jVanila framework. jVanila is a technology agnostic framework which works as a clean wrapper by abstracting each mobile platform complexities, this framewrok is developed by me.
 
-The deliverable meets all the given requirements while showcasing a technology agnostic approach.
+The deliverable meets all the given requirements while showcasing a technology agnostic approach. The app contains three modules 
+  1. App module is the where the presentation logic sits and API consumptions happens.
+  2. Places-API is the core module where business logic resides.
+  3. Places-Foursquare is what asked in requirement, the same is neatly developed by considering the business requirements, which can be used as plug and play.
+  4. Similar to Places-Foursquare, places-google could be one more module, the approach is scalable. 
 
   - The solution is built by applying MVP architecture pattern, by doing so, the right logic sits at the right place
   - Infra and business layers are cleanly separated out for better maintenance and code reuse
