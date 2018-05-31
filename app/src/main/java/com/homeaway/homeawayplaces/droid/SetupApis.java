@@ -1,5 +1,8 @@
 package com.homeaway.homeawayplaces.droid;
 
+import android.app.Application;
+
+import com.crashlytics.android.Crashlytics;
 import com.homeaway.homeawayplaces.domain.PlacesApi;
 import com.homeaway.homeawayplaces.foursquare.FSPlaceProvider;
 import com.homeaway.homeawayplaces.foursquare.sync.FSContext;
@@ -7,17 +10,27 @@ import com.homeaway.homeawayplaces.foursquare.sync.FSPlacesDAOFactory;
 import com.jvanila.mobile.IMobilePlatformFactory;
 import com.jvanila.mobile.location.VanilaLocation;
 
+import io.fabric.sdk.android.Fabric;
+
 /**
  * Created by pavan on 28/05/18.
  *
  */
 public class SetupApis {
 
-    SetupApis() {
+    private final Application mApp;
+
+    SetupApis(Application application) {
+        mApp = application;
     }
 
     public void setupOnAppInit(IMobilePlatformFactory mpf) {
+        setupFabric();
         setupPlacesApiToFoursquare(mpf);
+    }
+
+    private void setupFabric() {
+        Fabric.with(mApp, new Crashlytics());
     }
 
     private void setupPlacesApiToFoursquare(IMobilePlatformFactory mpf) {

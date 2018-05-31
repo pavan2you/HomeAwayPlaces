@@ -3,10 +3,11 @@
     <string name="iv_text">image view content description</string>
 
     <!-- IPlaceListView -->
-    <string name="place_list_search_in">Search In %1$s</string>
+    <string name="place_list_search_in">Search nearby %1$s</string>
+    <string name="place_list_search_nearby">Search nearby</string>
 
-    <string name="place_list_search_places">Search for places\n(for example, “coffee”, “pizza”,
-        “Whole Foods”, etc)</string>
+    <string name="place_list_search_places">Search nearby places\n“coffee”, “pizza”,
+        “Whole Foods”, etc</string>
     <string name="place_list_no_results">No results found!</string>
     <string name="place_list_no_favs">No user favorite places!</string>
     <string name="place_list_no_internet">OOPs&#8230; No internet!</string>
@@ -14,10 +15,13 @@
     <string name="place_list_search_retry">Retrying&#8230; %1$s</string>
     <string name="place_list_fetch_favs">Fetching Favorites</string>
 
-    <string name="place_list_search_field_hint">Search Places</string>
+    <string name="place_list_search_field_hint">Search nearby</string>
     <string name="action_label_change_poi">Change POI</string>
     <string name="action_label_use_my_location">Use my location as POI</string>
-    <string name="action_label_use_my_favs">My Favorites</string>
+    <string name="action_label_my_favs">My Favorites</string>
+    <string name="action_label_change_api">Changes Places Api</string>
+    <string name="action_label_foursquare">Foursquare</string>
+    <string name="action_label_google">Google</string>
 
     <string name="title_activity_map">Searched Places</string>
     <string name="map_poi_click_message">This is your Point Of Interest, Click on some other

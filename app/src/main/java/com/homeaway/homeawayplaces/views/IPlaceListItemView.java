@@ -31,4 +31,8 @@ public interface IPlaceListItemView extends IBindableView<Place> {
     void hideWebsiteUrl();
 
     void hideRatingIconAndLabel();
+
+    void showDivider();
+
+    void hideDivider();
 }

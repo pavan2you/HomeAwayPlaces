@@ -154,4 +154,18 @@ public class FSLocationDAO extends TypedDAO<FSLocationDTO> {
                 .getColumnIndex("formattedAddress")), "!~*~!");
         return dto;
     }
+
+    /***********************************************************************************************
+     * Overriding for ios tool conversion purpose, as it is failing to detect super class methods
+     **********************************************************************************************/
+
+    @Override
+    public void setSQLiteAccessor(ISqliteAccessor iSqliteAccessor) {
+        super.setSQLiteAccessor(iSqliteAccessor);
+    }
+
+    @Override
+    public boolean isSQLiteDatabaseOpen() {
+        return super.isSQLiteDatabaseOpen();
+    }
 }

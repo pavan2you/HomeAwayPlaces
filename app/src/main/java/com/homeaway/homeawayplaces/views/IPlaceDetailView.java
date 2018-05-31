@@ -19,4 +19,6 @@ public interface IPlaceDetailView extends IView {
     void showBrowserView(String url);
 
     void showCallerView();
+
+    void showProgress(boolean show);
 }

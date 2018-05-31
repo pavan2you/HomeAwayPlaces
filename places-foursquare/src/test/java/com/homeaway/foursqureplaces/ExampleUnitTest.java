@@ -1,4 +1,4 @@
-package com.homeaway.foursqureplaces;
+package com.homeaway.foursquareplaces;
 
 import org.junit.Test;
 

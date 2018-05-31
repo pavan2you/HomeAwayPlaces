@@ -1,10 +1,10 @@
 package com.homeaway.homeawayplaces.presenters;
 
+import com.homeaway.homeawayplaces.binders.PlaceListItemDataBinder;
 import com.homeaway.homeawayplaces.domain.Place;
 import com.homeaway.homeawayplaces.domain.PlaceModifiedEvent;
 import com.homeaway.homeawayplaces.domain.PlacesApi;
 import com.homeaway.homeawayplaces.domain.PlacesProvider;
-import com.homeaway.homeawayplaces.binders.PlaceListItemDataBinder;
 import com.homeaway.homeawayplaces.sync.dtos.StaticMapDTO;
 import com.homeaway.homeawayplaces.sync.dtos.StaticMapMarkerDTO;
 import com.homeaway.homeawayplaces.sync.dtos.StaticMapRequestDTO;
@@ -66,6 +66,7 @@ public class PlaceDetailPresenter extends Presenter<IPlaceDetailView> {
         int height = mobilePlatformInfo.deviceHeightInPx >> 1;
 
         getView().setStaticMapHeight(height);
+        getView().showProgress(true);
 
         fireStaticMapRequest(width, height);
     }
@@ -122,7 +123,7 @@ public class PlaceDetailPresenter extends Presenter<IPlaceDetailView> {
         else if (distanceToInterest <= 3500) {
             zoomLevel = 14;
         }
-        else if (distanceToInterest <= 7500) {
+        else if (distanceToInterest <= 7000) {
             zoomLevel = 13;
         }
 
@@ -190,6 +191,7 @@ public class PlaceDetailPresenter extends Presenter<IPlaceDetailView> {
 
     private void onStaticMapResultSuccessEvent(StaticMapDTO staticMap) {
         getView().setStaticMap(staticMap.mapRawData);
+        getView().showProgress(false);
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////

@@ -76,14 +76,4 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListItemViewHold
     private void unbindReferences(PlaceListItemViewHolder holder) {
         holder.onDestroy();
     }
-
-    @Override
-    public String getClassName() {
-        return getClass().getName();
-    }
-
-    @Override
-    public String stringify() {
-        return toString();
-    }
 }

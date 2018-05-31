@@ -129,4 +129,18 @@ public class AssociationDAO extends TypedDAO<AssociationDTO> {
         return new SQLiteQuery<>(this.mDatabase, query, params, this)
                 .getColumnList(columnName);
     }
+
+    /***********************************************************************************************
+     * Overriding for ios tool conversion purpose, as it is failing to detect super class methods
+     **********************************************************************************************/
+
+    @Override
+    public void setSQLiteAccessor(ISqliteAccessor iSqliteAccessor) {
+        super.setSQLiteAccessor(iSqliteAccessor);
+    }
+
+    @Override
+    public boolean isSQLiteDatabaseOpen() {
+        return super.isSQLiteDatabaseOpen();
+    }
 }

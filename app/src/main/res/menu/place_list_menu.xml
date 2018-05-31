@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/place_list_menu_change_poi"
+    <item
+        android:id="@+id/place_list_menu_change_poi"
         android:title="@string/action_label_change_poi"
         app:showAsAction="never" />
 
-    <item android:id="@+id/place_list_menu_my_location_poi"
+    <item
+        android:id="@+id/place_list_menu_my_location_poi"
         android:title="@string/action_label_use_my_location"
         app:showAsAction="never" />
 
-    <item android:id="@+id/place_list_menu_my_favs"
-        android:title="@string/action_label_use_my_favs"
+    <item
+        android:id="@+id/place_list_menu_my_favs"
+        android:title="@string/action_label_my_favs"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/place_list_menu_change_api"
+        android:enabled="true"
+        android:title="@string/action_label_change_api"
+        android:titleCondensed="@string/action_label_change_api">
+        <menu>
+            <item
+                android:id="@+id/place_list_menu_foursquare"
+                android:title="@string/action_label_foursquare" />
+            <item
+                android:id="@+id/place_list_menu_google"
+                android:title="@string/action_label_google" />
+        </menu>
+    </item>
 
 </menu>

@@ -50,6 +50,20 @@ public abstract class PlacesProvider extends VanilaObject {
     }
 
     /**
+     * Represents a search request
+     */
+    public static class SearchQuery {
+
+        public String query;
+        public SearchOptions options;
+
+        public SearchQuery(String query, SearchOptions options) {
+            this.query = query;
+            this.options = options;
+        }
+    }
+
+    /**
      * A callback to be called once search completes, provided the calling component registers
      * some callback.
      */
@@ -64,8 +78,29 @@ public abstract class PlacesProvider extends VanilaObject {
 
     private IGenericList<Callback> mCallbackList;
 
+    /**
+     * The built up cache, subjected to PlacesContext.cacheLimit
+     */
     protected IGenericMap<String, IGenericList<Place>> mRecentSearchResultsMap;
     protected IGenericList<String> mOldestSearchPhraseList;
+
+    /**
+     * If keep quite is true, then any received responses will be ignored, this will auto turn to
+     * false on next search query request.
+     *
+     */
+    protected boolean mKeepQuite;
+
+    /**
+     * Search monitor
+     */
+    protected boolean mIsBusyInSearch;
+
+    /**
+     * Always maintain the most recent one to serve next, which reduces unnecessary searches.
+     */
+    protected SearchQuery mMostRecentAwaitingQuery;
+
 
     protected PlacesProvider() {
         mMobilePlatformFactory = MobilePlatformFactoryLocator.getMobilePlatformFactory();
@@ -99,7 +134,20 @@ public abstract class PlacesProvider extends VanilaObject {
 
     public abstract AsyncToken<Boolean> deleteAsync(Place place);
 
-    public abstract void search(String query, SearchOptions options) throws VanilaException;
+    public void setKeepQuite(boolean keepQuite) {
+        mKeepQuite = keepQuite;
+
+        /*
+         * If provider is keeping quite then no need to have any watchers related to processing.
+         * So reset them.
+         */
+        if (keepQuite) {
+            mIsBusyInSearch = false;
+            mMostRecentAwaitingQuery = null;
+        }
+    }
+
+    public abstract void search(SearchQuery searchQuery) throws VanilaException;
 
     protected void searchComplete(String query, IGenericList<Place> result,
             FailureResponseDTO failureResponse) {

@@ -17,7 +17,7 @@ public class HomeAwayPlacesApplication extends VanilaApplication {
         try {
             super.init();
 
-            SetupApis setupApis = new SetupApis();
+            SetupApis setupApis = new SetupApis(this);
             setupApis.setupOnAppInit(mMobilePlatformFactory);
         }
         catch (Exception e) {

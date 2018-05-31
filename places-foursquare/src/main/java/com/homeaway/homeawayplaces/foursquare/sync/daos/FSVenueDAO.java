@@ -18,6 +18,7 @@ import com.jvanila.droid.collections.GenericList;
 import com.jvanila.droid.sync.daos.SQLiteTableInfo;
 import com.jvanila.droid.sync.daos.TypedDAO;
 import com.jvanila.mobile.MobilePlatformFactoryLocator;
+import com.jvanila.mobile.job.AsyncToken;
 import com.jvanila.mobile.storage.ISqliteAccessor;
 
 /**
@@ -264,5 +265,40 @@ public class FSVenueDAO extends TypedDAO<FSVenueDTO> {
         }
 
         return dto;
+    }
+
+    /***********************************************************************************************
+     * Overriding for ios tool conversion purpose, as it is failing to detect super class methods
+     **********************************************************************************************/
+
+    @Override
+    public void setSQLiteAccessor(ISqliteAccessor iSqliteAccessor) {
+        super.setSQLiteAccessor(iSqliteAccessor);
+    }
+
+    @Override
+    public boolean isSQLiteDatabaseOpen() {
+        return super.isSQLiteDatabaseOpen();
+    }
+
+    public AsyncToken<IGenericList<FSVenueDTO>> getAllRecordsAsync() {
+        return super.getAllRecordsAsync();
+    }
+
+    public AsyncToken<IGenericList<FSVenueDTO>> getRecordListByColumnAsync(String var1,
+            String var2) {
+        return super.getRecordListByColumnAsync(var1, var2);
+    }
+
+    public AsyncToken<FSVenueDTO> getRecordByColumnAsync(String var1, String var2) {
+        return super.getRecordByColumnAsync(var1, var2);
+    }
+
+    public AsyncToken<Integer> updateRecordAsync(FSVenueDTO var1) {
+        return super.updateRecordAsync(var1);
+    }
+
+    public AsyncToken<Boolean> deleteRecordByIdAsync(String var1) {
+        return super.deleteRecordByIdAsync(var1);
     }
 }

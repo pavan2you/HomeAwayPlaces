@@ -36,6 +36,7 @@ public class PlaceListItemViewHolder extends VanilaRecyclerBindableViewHolder<Pl
     private TextView mDistanceView;
     private TextView mRatingView;
     private TextView mWebsiteView;
+    private View mDividerView;
 
     public PlaceListItemViewHolder(View view, View.OnClickListener clickListener) {
         super(view, PlaceListItemDataBinder.class.getName());
@@ -51,6 +52,7 @@ public class PlaceListItemViewHolder extends VanilaRecyclerBindableViewHolder<Pl
         mDistanceView = mView.findViewById(R.id.place_list_item_distance);
         mRatingView = mView.findViewById(R.id.place_list_item_rating);
         mWebsiteView = mView.findViewById(R.id.place_list_item_website);
+        mDividerView = mView.findViewById(R.id.place_list_item_divider);
         mWebsiteView.setOnClickListener(clickListener);
 
         mFavouriteIconView.setOnClickListener(clickListener);
@@ -126,6 +128,16 @@ public class PlaceListItemViewHolder extends VanilaRecyclerBindableViewHolder<Pl
     @Override
     public void hideRatingIconAndLabel() {
         mRatingView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showDivider() {
+        mDividerView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideDivider() {
+        mDividerView.setVisibility(View.GONE);
     }
 
     @Override

@@ -63,6 +63,7 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
      * Derived, Formatted title
      */
     private String mTitle;
+    private String mSearchFieldHint;
 
     /**
      * Contextual empty data messages
@@ -88,6 +89,13 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
     private String mRetriableSearchPhrase;
 
     private boolean mShowFavorites;
+    private boolean mFetchFavorites;
+
+    /**
+     * This is to handle configuration changes in android and view will move out / move in flows
+     * in iOS.
+     */
+    private String mLoadedSearchPhrase;
 
     public PlaceListPresenter(IPlaceListView view) {
         super(view);
@@ -99,6 +107,7 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
 
         loadPlaceContext();
 
+        mSearchFieldHint = getString(Strings.place_list_search_nearby);
         mSearchPlacesTip = getString(Strings.place_list_search_places);
         mNoFavPlacesMessage = getString(Strings.place_list_no_favs);
         mNoResultsMessage = getString(Strings.place_list_no_results);
@@ -106,11 +115,16 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         mUnrecoverableMessage = getString(Strings.place_list_unrecoverable_nw_error);
 
         mCurrentNoDataMessage = mSearchPlacesTip;
+        mFetchFavorites = mShowFavorites = true; // by default show favourites if present
 
         /*
          * Let the presenter be event-aware
          */
         subscribeToEvents();
+    }
+
+    public void loadWith(String searchPhrase) {
+        mLoadedSearchPhrase = searchPhrase;
     }
 
     /**
@@ -152,6 +166,10 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
 
         showListOrInfo(mCurrentPlaceList);
         loadFavourites();
+
+        if (mLoadedSearchPhrase != null) {
+            getView().setSearchFieldText(mLoadedSearchPhrase);
+        }
     }
 
     private void loadFavourites() {
@@ -163,7 +181,7 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
 
     private void showListOrInfo(IGenericList<Place> list) {
         if (list == null || list.size() == 0) {
-            getView().setPoiLabel(mTitle);
+            getView().setSearchFieldHint(mSearchFieldHint);
             getView().hideListView();
             getView().setAndShowNoDataLabel(mCurrentNoDataMessage);
             getView().hideFabIcon();
@@ -191,10 +209,15 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
     }
 
     public void onMyFavPlacesMenuItemClick() {
+        getView().hideVirtualKeyboard();
+        mShowFavorites = true;
+
+        mCurrentNoDataMessage = mNoFavPlacesMessage;
+        getView().setSearchFieldText("");
+
         if (mFavoritePlaceList == null || mFavoritePlaceList.size() == 0) {
-            mShowFavorites = true;
+            mFetchFavorites = true;
             getView().showProgress(true);
-//            getView().showInfoMessage("Fetching favorites...");
             loadFavourites();
         }
         else {
@@ -203,9 +226,8 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
     }
 
     private void showFavoritesList() {
-        mCurrentPlaceList = mFavoritePlaceList;
-        mCurrentNoDataMessage = mNoFavPlacesMessage;
-
+        mCurrentPlaceList = mMobilePlatformFactory.newList();
+        mCurrentPlaceList.addAll(mFavoritePlaceList);
         showListOrInfo(mCurrentPlaceList);
     }
 
@@ -221,23 +243,25 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
             mCurrentPlaceList = mSearchedPlaceList = null;
             mCurrentNoDataMessage = mSearchPlacesTip;
 
+            PlacesApi.provider().setKeepQuite(true);
             getView().showProgress(false);
             showListOrInfo(null);
         }
         else {
 
+            mFetchFavorites = mShowFavorites = false;
             mIsSearchInProgress = true;
+            getView().showProgress(true);
 
             PlacesProvider.SearchOptions options = new PlacesProvider.SearchOptions();
             options.nearbyFreeFormText = mCurrentPointOfInterest.label;
             options.limit = mFetchLimit;
 
             try {
-                PlacesApi.provider().search(searchPhrase, options);
+                PlacesApi.provider().search(new PlacesProvider.SearchQuery(searchPhrase, options));
             } catch (VanilaException e) {
                 e.printStackTrace();
             }
-            getView().showProgress(true);
         }
     }
 
@@ -271,6 +295,19 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         BinderUtil.refreshItemViews(place);
 
         syncChangeToDatabase(place);
+
+        switchToSearchResultsIfFavoritesAreEmpty();
+    }
+
+    private void switchToSearchResultsIfFavoritesAreEmpty() {
+        if (mFavoritePlaceList.size() == 0 && mShowFavorites) {
+            mShowFavorites = false;
+
+            mCurrentNoDataMessage = mSearchPlacesTip;
+            mCurrentPlaceList = mSearchedPlaceList;
+
+            showListOrInfo(null);
+        }
     }
 
     public void onMapIconClick() {
@@ -304,8 +341,8 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         mFavoritePlaceList = result;
         mReadFavoritesToken = null;
 
-        if (mShowFavorites) {
-            mShowFavorites = false;
+        if (mFetchFavorites) {
+            mCurrentNoDataMessage = mNoFavPlacesMessage;
             getView().showProgress(false);
             showFavoritesList();
         }
@@ -317,6 +354,7 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     private void onPlaceSearchResultEvent(PlaceSearchResultEvent event) {
+
         mIsSearchInProgress = false;
 
         if (event.failureResponse != null) {
@@ -398,24 +436,35 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         Place modifiedPlace = event.place;
 
         if (mSearchedPlaceList != null && mSearchedPlaceList.contains(modifiedPlace)) {
+            updateItemInList(modifiedPlace, mSearchedPlaceList,
+                    mCurrentPlaceList == mSearchedPlaceList);
+        }
 
-            //No need to show website in list
-            modifiedPlace.showWebsite = false;
+        if (mFavoritePlaceList != null) {
 
-            //Replace
-            int indexOfPlace = mSearchedPlaceList.indexOf(modifiedPlace);
-            Place existingPlace = mSearchedPlaceList.get(indexOfPlace);
-            mSearchedPlaceList.replace(modifiedPlace, indexOfPlace);
+            if (!modifiedPlace.isFavorite) {
+                mFavoritePlaceList.remove(modifiedPlace);
+            }
+            else {
+                mFavoritePlaceList.add(modifiedPlace);
+            }
 
-            /*
-             * 1. Swap tagged views
-             *      - to refresh first we need to get the associated item view. As the approach is
-             *      swap object, the developer need to make sure he/she transfers the tagged views
-             *      to modified object.
-             *
-             * 2. Refresh list item
-             */
-            BinderUtil.swapTagsInItemViews(existingPlace, modifiedPlace);
+            switchToSearchResultsIfFavoritesAreEmpty();
+        }
+    }
+
+    private void updateItemInList(Place modifiedPlace, IGenericList<Place> list,
+            boolean refreshList) {
+
+        //Replace
+        int indexOfPlace = list.indexOf(modifiedPlace);
+        Place existingPlace = list.get(indexOfPlace);
+
+        existingPlace.isFavorite = modifiedPlace.isFavorite;
+        /*
+         * Refresh only cell
+         */
+        if (refreshList) {
             BinderUtil.refreshItemViews(modifiedPlace);
         }
     }
@@ -522,14 +571,8 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
 
         mCurrentPointOfInterest = null;
 
-        if (mSearchedPlaceList != null) {
-            mSearchedPlaceList.clear();
-            mSearchedPlaceList = null;
-        }
-        if (mFavoritePlaceList != null) {
-            mFavoritePlaceList.clear();
-            mFavoritePlaceList = null;
-        }
+        mSearchedPlaceList = null;
+        mFavoritePlaceList = null;
 
         mCurrentPlaceList = null;
 
@@ -542,5 +585,13 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         mCurrentNoDataMessage = null;
 
         super.onDestroy();
+    }
+
+    public void onUseFoursquarePlacesMenuItemClick() {
+        getView().showInfoMessage("Using Foursquare");
+    }
+
+    public void onUseGooglePlacesMenuItemClick() {
+        getView().showInfoMessage("Using Google");
     }
 }

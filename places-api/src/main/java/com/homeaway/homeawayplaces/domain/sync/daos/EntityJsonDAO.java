@@ -197,5 +197,20 @@ public class EntityJsonDAO extends TypedDAO<EntityJsonDTO> {
     public IGenericList<EntityJsonDTO> getRecordListByEntityGroup(String entity_group) {
         return super.getRecordListByColumn("entity_group", entity_group);
     }
+
+
+    /***********************************************************************************************
+     * Overriding for ios tool conversion purpose, as it is failing to detect super class methods
+     **********************************************************************************************/
+
+    @Override
+    public void setSQLiteAccessor(ISqliteAccessor iSqliteAccessor) {
+        super.setSQLiteAccessor(iSqliteAccessor);
+    }
+
+    @Override
+    public boolean isSQLiteDatabaseOpen() {
+        return super.isSQLiteDatabaseOpen();
+    }
 }
 

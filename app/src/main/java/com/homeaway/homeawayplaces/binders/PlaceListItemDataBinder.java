@@ -105,11 +105,15 @@ public class PlaceListItemDataBinder extends DataBinder<IPlaceListItemView> {
             getView().hideRatingIconAndLabel();
         }
 
-        if (place.showWebsite && !mStringUtils.isNullOrEmpty(place.websiteUrl)) {
-            getView().setAndShowWebsiteUrl(place.websiteUrl);
+        if (place.showWebsite) {
+            if (!mStringUtils.isNullOrEmpty(place.websiteUrl)) {
+                getView().setAndShowWebsiteUrl(place.websiteUrl);
+            }
+            getView().hideDivider();
         }
         else {
             getView().hideWebsiteUrl();
+            getView().showDivider();
         }
     }
 

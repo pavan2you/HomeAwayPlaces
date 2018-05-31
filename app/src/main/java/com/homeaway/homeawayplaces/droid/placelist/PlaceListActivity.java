@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -45,6 +47,9 @@ import com.jvanila.mobile.location.VanilaLocation;
 public class PlaceListActivity extends VanilaAppCompatActivity implements IPlaceListView,
         View.OnClickListener {
 
+    private static final String STATE_SEARCH_PHRASE = "STATE_SEARCH_PHRASE";
+
+    private RetainFragment mRetainFragment;
     private PlaceListPresenter mPlaceListPresenter;
 
     private TextView mToolbarTitle;
@@ -63,9 +68,38 @@ public class PlaceListActivity extends VanilaAppCompatActivity implements IPlace
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        if (mRetainFragment != null) {
+            outState.putString(PlaceListActivity.STATE_SEARCH_PHRASE, mRetainFragment.searchPhrase);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onCreateController(String controllerClassName, Bundle savedInstanceState) {
         super.onCreateController(controllerClassName, savedInstanceState);
         mPlaceListPresenter = (PlaceListPresenter) mController;
+
+        loadRetainFragment();
+        loadRetainFragmentState(savedInstanceState);
+
+        mPlaceListPresenter.loadWith(mRetainFragment.searchPhrase);
+    }
+
+    private void loadRetainFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        mRetainFragment = (RetainFragment) fm.findFragmentByTag(RetainFragment.TAG);
+        if (mRetainFragment == null) {
+            mRetainFragment = new RetainFragment();
+            fm.beginTransaction().add(mRetainFragment, RetainFragment.TAG).commit();
+        }
+    }
+
+    private void loadRetainFragmentState(Bundle savedInstanceState) {
+        if (mRetainFragment.searchPhrase == null && savedInstanceState != null) {
+            mRetainFragment.searchPhrase = savedInstanceState.getString(
+                    PlaceListActivity.STATE_SEARCH_PHRASE);
+        }
     }
 
     @Override
@@ -96,7 +130,8 @@ public class PlaceListActivity extends VanilaAppCompatActivity implements IPlace
 
             @Override
             public void afterTextChanged(Editable s) {
-                mPlaceListPresenter.onSearchPlaces(s.toString());
+                mRetainFragment.searchPhrase = s.toString();
+                mPlaceListPresenter.onSearchPlaces(mRetainFragment.searchPhrase);
             }
         });
 
@@ -166,6 +201,11 @@ public class PlaceListActivity extends VanilaAppCompatActivity implements IPlace
     }
 
     @Override
+    public void hideVirtualKeyboard() {
+        ViewUtils.hideVirtualKeyboard(this);
+    }
+
+    @Override
     public void setAndShowNoDataLabel(String message) {
         mNoDataLabelView.setVisibility(View.VISIBLE);
         mNoDataLabelView.setText(message);
@@ -187,7 +227,7 @@ public class PlaceListActivity extends VanilaAppCompatActivity implements IPlace
     }
 
     @Override
-    public void setPoiLabel(String label) {
+    public void setSearchFieldHint(String label) {
         mSearchField.setHint(label);
     }
 
@@ -212,6 +252,12 @@ public class PlaceListActivity extends VanilaAppCompatActivity implements IPlace
         }
         else if (item.getItemId() == R.id.place_list_menu_my_favs) {
             mPlaceListPresenter.onMyFavPlacesMenuItemClick();
+        }
+        else if (item.getItemId() == R.id.place_list_menu_foursquare) {
+            mPlaceListPresenter.onUseFoursquarePlacesMenuItemClick();
+        }
+        else if (item.getItemId() == R.id.place_list_menu_google) {
+            mPlaceListPresenter.onUseGooglePlacesMenuItemClick();
         }
 
         return super.onOptionsItemSelected(item);
@@ -274,6 +320,15 @@ public class PlaceListActivity extends VanilaAppCompatActivity implements IPlace
 
     @Override
     public void exitApplication() {
+        mRetainFragment.setRetainInstance(false);
+        FragmentManager fm = getSupportFragmentManager();
+        try {
+            fm.beginTransaction().remove(mRetainFragment).commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mRetainFragment = null;
+
         /*
          * Ideally not required, but to handle any corner scenarios, killing presenter a few millis
          * before than activity.
@@ -321,5 +376,24 @@ public class PlaceListActivity extends VanilaAppCompatActivity implements IPlace
         mPlaceListPresenter = null;
 
         super.onDestroy();
+    }
+
+    /**
+     * To restore config changes
+     */
+    public static class RetainFragment extends Fragment {
+
+        private static final String TAG = "RetainFragment";
+
+        private String searchPhrase;
+
+        public RetainFragment() {
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setRetainInstance(true);
+        }
     }
 }

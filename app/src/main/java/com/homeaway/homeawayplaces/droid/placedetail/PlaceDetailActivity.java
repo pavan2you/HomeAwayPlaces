@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.homeaway.homeawayplaces.domain.Place;
@@ -34,6 +35,7 @@ public class PlaceDetailActivity extends VanilaAppCompatActivity implements IPla
     public static final String EXTRA_CENTER = "EXTRA_CENTER";
 
     private ImageView mStaticMapView;
+    private ProgressBar mProgressBar;
     private PlaceListItemViewHolder mReusablePlaceDetailItemView;
 
     private PlaceDetailPresenter mPlaceDetailPresenter;
@@ -69,6 +71,7 @@ public class PlaceDetailActivity extends VanilaAppCompatActivity implements IPla
         setupToolbar();
 
         mStaticMapView = findViewById(R.id.place_detail_static_map);
+        mProgressBar = findViewById(R.id.place_detail_map_progress);
 
         mReusablePlaceDetailItemView = new PlaceListItemViewHolder(
                 findViewById(R.id.place_list_item_view), this);
@@ -104,6 +107,11 @@ public class PlaceDetailActivity extends VanilaAppCompatActivity implements IPla
                 collapsingToolbar.getLayoutParams();
         parameters.height = height;
         collapsingToolbar.setLayoutParams(parameters);
+    }
+
+    @Override
+    public void showProgress(boolean show) {
+        mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     @Override
@@ -147,7 +155,7 @@ public class PlaceDetailActivity extends VanilaAppCompatActivity implements IPla
             View parentParent = (View) v.getParent().getParent();
             mPlaceDetailPresenter.onPlaceItemFavIconClick((Place) parentParent.getTag());
         }
-        if (v.getId() == R.id.place_list_item_website) {
+        else if (v.getId() == R.id.place_list_item_website) {
             View parentParent = (View) v.getParent().getParent();
             mPlaceDetailPresenter.onPlaceItemUrlClick((Place) parentParent.getTag());
         }
@@ -161,6 +169,7 @@ public class PlaceDetailActivity extends VanilaAppCompatActivity implements IPla
     @Override
     protected void onDestroy() {
         ViewUtils.unbindReferences(mStaticMapView);
+        ViewUtils.unbindReferences(mProgressBar);
 
         if (mReusablePlaceDetailItemView != null) {
             mReusablePlaceDetailItemView.onDestroy();

@@ -6,6 +6,8 @@ package com.homeaway.homeawayplaces.locale;
 public class Strings {
 
     public static final String place_list_search_in = "place_list_search_in";
+    public static final String place_list_search_nearby = "place_list_search_nearby";
+
     public static final String place_list_search_places = "place_list_search_places";
     public static final String place_list_no_results = "place_list_no_results";
     public static final String place_list_no_favs = "place_list_no_favs";

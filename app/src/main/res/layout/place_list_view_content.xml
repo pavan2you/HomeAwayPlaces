@@ -56,8 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/place_list_search_field"
-        android:paddingTop="@dimen/dimen_8dp"
-        android:paddingBottom="@dimen/dimen_48dp" />
+        android:paddingTop="@dimen/dimen_8dp" />
 
     <View
         android:layout_width="match_parent"

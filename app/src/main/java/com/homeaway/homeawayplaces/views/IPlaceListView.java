@@ -27,7 +27,7 @@ public interface IPlaceListView extends IView {
 
     void showFabIcon();
 
-    void setPoiLabel(String label);
+    void setSearchFieldHint(String label);
 
     void setTitleWith(String title);
 
@@ -38,4 +38,6 @@ public interface IPlaceListView extends IView {
     void showProgress(boolean show);
 
     void setSearchFieldText(String text);
+
+    void hideVirtualKeyboard();
 }

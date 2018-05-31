@@ -60,7 +60,7 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
 
     @Override
     public AsyncToken<Place> fetchByIdAsync(String id) {
-        AsyncToken<Place> placeToken = new AsyncToken<>();
+        AsyncToken<Place> placeToken = new AsyncToken<Place>();
 
         FSPlacesDAOFactory daoFactory = mMobilePlatformFactory.getDAOFactory();
         AsyncToken<FSVenueDTO> venueToken = daoFactory.getFSVenueDAO().getRecordByColumnAsync(
@@ -75,7 +75,7 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
 
     @Override
     public AsyncToken<IGenericList<Place>> fetchAllAsync() {
-        AsyncToken<IGenericList<Place>> placeToken = new AsyncToken<>();
+        AsyncToken<IGenericList<Place>> placeToken = new AsyncToken<IGenericList<Place>>();
 
         FSPlacesDAOFactory daoFactory = mMobilePlatformFactory.getDAOFactory();
         AsyncToken<IGenericList<FSVenueDTO>> venueToken = daoFactory.getFSVenueDAO()
@@ -90,7 +90,7 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
 
     @Override
     public AsyncToken<IGenericList<Place>> fetchFavoritesAsync() {
-        AsyncToken<IGenericList<Place>> placeToken = new AsyncToken<>();
+        AsyncToken<IGenericList<Place>> placeToken = new AsyncToken<IGenericList<Place>>();
 
         FSPlacesDAOFactory daoFactory = mMobilePlatformFactory.getDAOFactory();
         AsyncToken<IGenericList<FSVenueDTO>> venueToken = daoFactory.getFSVenueDAO()
@@ -161,24 +161,53 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
-    public void search(String query, SearchOptions options) throws VanilaException {
+    public void search(SearchQuery searchQuery) throws VanilaException {
+
+        setKeepQuite(false);
+
+        String query = searchQuery.query;
+        SearchOptions options = searchQuery.options;
+
         if (isCacheHavingResults(query)) {
             searchComplete(query, mRecentSearchResultsMap.get(query), null);
         }
         else {
-            FSRequestDTO request = mFSContext.buildVenueRequest(query, options);
+            if (mIsBusyInSearch) {
+                mMostRecentAwaitingQuery = searchQuery;
+            }
+            else {
 
-            FSVenueSearchGateway gateway = mMobilePlatformFactory.getSyncAdapter().getSyncGateway(
-                    FSVenueSearchGateway.CLASS_NAME);
-            gateway.fireReadVenueListRequest(request);
+                mMostRecentAwaitingQuery = null;
+                mIsBusyInSearch = true;
+
+                FSRequestDTO request = mFSContext.buildVenueRequest(query, options);
+
+                FSVenueSearchGateway gateway = mMobilePlatformFactory.getSyncAdapter()
+                        .getSyncGateway(FSVenueSearchGateway.CLASS_NAME);
+                gateway.fireReadVenueListRequest(request);
+            }
         }
     }
 
     private void onVenueSearchResultFailureEvent(String query, FailureResponseDTO failureResponse) {
+        mIsBusyInSearch = false;
+        mMostRecentAwaitingQuery = null;
         searchComplete(query, null, failureResponse);
     }
 
     private void onVenueSearchResultSuccessEvent(String query, FSVenueListDTO venueList) {
+
+        mIsBusyInSearch = false;
+
+        if (mMostRecentAwaitingQuery != null) {
+            try {
+                search(mMostRecentAwaitingQuery);
+            }
+            catch (VanilaException e) {
+                e.printStackTrace();
+            }
+        }
+
         IGenericList<Place> placeList = toPlaceList(venueList.venus, true);
         searchComplete(query, placeList, null);
     }
@@ -262,6 +291,10 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
 
     @Override
     public void onEvent(IEvent event) {
+
+        if (mKeepQuite) {
+            return;
+        }
 
         if (event.isInstanceOf(NetResponseProcessingCompletedEvent.class)) {
 

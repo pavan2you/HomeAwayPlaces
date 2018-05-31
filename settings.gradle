@@ -1,1 +1,1 @@
-include ':app', ':jvanila-droid', ':places-foursqure', ':places-api'
+include ':app', ':jvanila-droid', ':places-foursquare', ':places-api'

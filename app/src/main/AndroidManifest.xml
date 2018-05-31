@@ -9,6 +9,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".HomeAwayPlacesApplication"
@@ -78,6 +79,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="09cebc98f7cdc997a6d814399fcec8783f075429" />
     </application>
 
 </manifest>
