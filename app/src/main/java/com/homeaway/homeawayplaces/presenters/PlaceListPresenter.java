@@ -225,6 +225,14 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         }
     }
 
+    public void onUseFoursquarePlacesMenuItemClick() {
+        getView().showInfoMessage("TODO : trigger to use Foursquare PlacesApi");
+    }
+
+    public void onUseGooglePlacesMenuItemClick() {
+        getView().showInfoMessage("TODO : trigger to use Google's PlacesApi");
+    }
+
     private void showFavoritesList() {
         mCurrentPlaceList = mMobilePlatformFactory.newList();
         mCurrentPlaceList.addAll(mFavoritePlaceList);
@@ -585,13 +593,5 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         mCurrentNoDataMessage = null;
 
         super.onDestroy();
-    }
-
-    public void onUseFoursquarePlacesMenuItemClick() {
-        getView().showInfoMessage("Using Foursquare");
-    }
-
-    public void onUseGooglePlacesMenuItemClick() {
-        getView().showInfoMessage("Using Google");
     }
 }
