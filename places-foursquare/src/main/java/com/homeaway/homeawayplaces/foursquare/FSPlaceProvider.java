@@ -310,9 +310,9 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
         if (event.isInstanceOf(NetResponseProcessingCompletedEvent.class)) {
 
             NetResponseProcessingCompletedEvent nrpce = (NetResponseProcessingCompletedEvent) event;
-            if (nrpce.processingStats != null) {
+            /*if (nrpce.processingStats != null) {
                 nrpce.processingStats.printStats();
-            }
+            }*/
 
             if (mStringUtils.areXAndYEqual(nrpce.mRequestType, FSVenueDTO.CLASS_NAME)) {
                 onVenueSearchResultSuccessEvent(nrpce.mContainedObjectUniqueId,
@@ -322,9 +322,9 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
         else if (event.isInstanceOf(FailureResponseDTO.class)) {
 
             FailureResponseDTO failureEvent = (FailureResponseDTO) event;
-            if (failureEvent.processingStats != null) {
+            /*if (failureEvent.processingStats != null) {
                 failureEvent.processingStats.printStats();
-            }
+            }*/
 
             if (mStringUtils.areXAndYEqual(failureEvent.RequestType, FSVenueDTO.CLASS_NAME)) {
                 onVenueSearchResultFailureEvent(failureEvent.ContainedObjectUniqueId, failureEvent);
