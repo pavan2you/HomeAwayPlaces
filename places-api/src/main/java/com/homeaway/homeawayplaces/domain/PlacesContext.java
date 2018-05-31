@@ -1,5 +1,6 @@
 package com.homeaway.homeawayplaces.domain;
 
+import com.jvanila.core.io.DataObject;
 import com.jvanila.mobile.location.VanilaLocation;
 
 /**
@@ -11,7 +12,9 @@ import com.jvanila.mobile.location.VanilaLocation;
  * etc and also provides convenient API usage helper methods like constructing requests etc.
  *
  */
-public abstract class PlacesContext {
+public abstract class PlacesContext extends DataObject {
+
+    public static final String CLASS_NAME = PlacesContext.class.getName();
 
     /**
      * The user's point of interest

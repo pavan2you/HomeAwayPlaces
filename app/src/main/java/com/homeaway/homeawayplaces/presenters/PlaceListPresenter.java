@@ -157,9 +157,7 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         mCurrentPointOfInterest = context.poi;
         mFetchLimit = context.fetchLimit;
 
-        String poi = mStringUtils.replaceAllOccuarencesOfYWithZInX("+", " ",
-                mCurrentPointOfInterest.label);
-        mTitle = getString(Strings.place_list_search_in, poi);
+        mTitle = getString(Strings.place_list_search_nearby);
     }
 
     private void loadModel() {
@@ -233,10 +231,28 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         getView().showInfoMessage("TODO : trigger to use Google's PlacesApi");
     }
 
-    private void showFavoritesList() {
-        mCurrentPlaceList = mMobilePlatformFactory.newList();
-        mCurrentPlaceList.addAll(mFavoritePlaceList);
-        showListOrInfo(mCurrentPlaceList);
+    public void onPointOfInterestChange(PlacesContext modifiedContext) {
+        /*
+         * Expecting the flow is built for the same then finally it will map to here
+         */
+        PlacesApi.provider().updateContext(modifiedContext);
+    }
+
+    public void onUserLocationAsPointOfInterest(VanilaLocation userLocation) {
+        /*
+         * Expecting the flow is built for the same then finally it will map to here
+         */
+        PlacesApi.provider().getContext().poi = userLocation;
+        /*
+         * It would be nice retrieving the geo address if userLocation doesn't have the same.
+         */
+    }
+
+    public void onSwitchPlacesProvider(PlacesProvider provider) {
+        /*
+         * Expecting the flow is built for the same then finally it will map to here
+         */
+        PlacesApi.withProvider(provider);
     }
 
     public void onSearchPlaces(String searchPhrase) {
@@ -307,6 +323,19 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         switchToSearchResultsIfFavoritesAreEmpty();
     }
 
+    public void onMapIconClick() {
+        /*
+         * Let the map display either searched list or favorite list
+         */
+        getView().showMapView(mCurrentPlaceList, mCurrentPointOfInterest);
+    }
+
+    private void showFavoritesList() {
+        mCurrentPlaceList = mMobilePlatformFactory.newList();
+        mCurrentPlaceList.addAll(mFavoritePlaceList);
+        showListOrInfo(mCurrentPlaceList);
+    }
+
     private void switchToSearchResultsIfFavoritesAreEmpty() {
         if (mFavoritePlaceList.size() == 0 && mShowFavorites) {
             mShowFavorites = false;
@@ -317,14 +346,6 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
             showListOrInfo(null);
         }
     }
-
-    public void onMapIconClick() {
-        /*
-         * Let the map display either searched list or favorite list
-         */
-        getView().showMapView(mCurrentPlaceList, mCurrentPointOfInterest);
-    }
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////  DATABASE ACCESS  ///////////////////////////////////////
@@ -350,7 +371,8 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         mReadFavoritesToken = null;
 
         if (mFetchFavorites) {
-            mCurrentNoDataMessage = mNoFavPlacesMessage;
+            mCurrentNoDataMessage = mSearchedPlaceList == null ?
+                    mSearchPlacesTip : mNoFavPlacesMessage;
             getView().showProgress(false);
             showFavoritesList();
         }
@@ -380,16 +402,6 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
         mCurrentPlaceList = mSearchedPlaceList = event.placeList;
         mCurrentNoDataMessage = mNoResultsMessage;
 
-        /*if (mFavoritePlaceList != null) {
-
-            for (FSVenueDTO favoritePlace : mFavoritePlaceList) {
-
-                int indexOfFavoritePlace = mSearchedPlaceList.indexOf(favoritePlace);
-                if (indexOfFavoritePlace > -1) {
-                    mSearchedPlaceList.get(indexOfFavoritePlace).isFavorite = true;
-                }
-            }
-        }*/
         showListOrInfo(mCurrentPlaceList);
     }
 
@@ -457,7 +469,19 @@ public class PlaceListPresenter extends Presenter<IPlaceListView> {
                 mFavoritePlaceList.add(modifiedPlace);
             }
 
-            switchToSearchResultsIfFavoritesAreEmpty();
+            if (mShowFavorites) {
+                if (mFavoritePlaceList.size() == 0) {
+                    mShowFavorites = false;
+
+                    mCurrentNoDataMessage = mSearchPlacesTip;
+                    mCurrentPlaceList = mSearchedPlaceList;
+
+                    showListOrInfo(null);
+                }
+                else {
+                    showFavoritesList();
+                }
+            }
         }
     }
 

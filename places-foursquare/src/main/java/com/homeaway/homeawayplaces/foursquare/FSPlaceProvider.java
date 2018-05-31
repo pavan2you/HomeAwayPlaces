@@ -38,10 +38,10 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
     private IStringUtils mStringUtils;
 
     private IGenericMap<String, FSVenueDTO> mVenueCache;
-
     private FSContext mFSContext;
 
     public FSPlaceProvider(FSContext fsContext) {
+        super(fsContext);
         mFSContext = fsContext;
 
         mStringUtils = mMobilePlatformFactory.getStringUtils();
@@ -49,10 +49,21 @@ public class FSPlaceProvider extends PlacesProvider implements IEventSubscriber 
     }
 
     @Override
-    public PlacesContext getContext() {
-        return mFSContext;
-    }
+    public void updateContext(PlacesContext context) {
+        super.updateContext(context);
 
+        if (context != null && context.isInstanceOf(FSContext.class)) {
+            mFSContext = (FSContext) context;
+
+            String entityClass = FSContext.CLASS_NAME;
+            String entityUuid = FSContext.class.getSimpleName();
+
+            /*
+             * We could even persist and load it back if needed
+             */
+            persistContext(entityClass, entityUuid, context);
+        }
+    }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////  DB CRUD PROCESSING  //////////////////////////////////////

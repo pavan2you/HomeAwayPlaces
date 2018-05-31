@@ -19,6 +19,8 @@ import com.jvanila.mobile.location.VanilaLocation;
  */
 public class FSContext extends PlacesContext {
 
+    public static final String CLASS_NAME = FSContext.class.getName();
+
     private static final int DEFAULT_FETCH_LIMIT = 20;
     private static final int DEFAULT_CACHE_LIMIT = 10;
 

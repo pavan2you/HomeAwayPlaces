@@ -1,5 +1,8 @@
 package com.homeaway.homeawayplaces.domain;
 
+import com.homeaway.homeawayplaces.domain.sync.PlacesDAOFactory;
+import com.homeaway.homeawayplaces.domain.sync.daos.EntityJsonDAO;
+import com.homeaway.homeawayplaces.domain.sync.dtos.EntityJsonDTO;
 import com.jvanila.core.collection.IGenericList;
 import com.jvanila.core.collection.IGenericMap;
 import com.jvanila.core.eventbus.IEventBus;
@@ -8,6 +11,7 @@ import com.jvanila.core.objectflavor.VanilaObject;
 import com.jvanila.mobile.IMobilePlatformFactory;
 import com.jvanila.mobile.MobilePlatformFactoryLocator;
 import com.jvanila.mobile.job.AsyncToken;
+import com.jvanila.mobile.json.JSONUtils;
 import com.jvanila.mobile.location.ILatLngBounds;
 import com.jvanila.mobile.location.VanilaLocation;
 import com.jvanila.mobile.sync.dtos.FailureResponseDTO;
@@ -73,6 +77,8 @@ public abstract class PlacesProvider extends VanilaObject {
             FailureResponseDTO failureResponse);
     }
 
+    protected PlacesContext mPlaceContext;
+
     protected IMobilePlatformFactory mMobilePlatformFactory;
     protected IEventBus mEventBus;
 
@@ -102,7 +108,9 @@ public abstract class PlacesProvider extends VanilaObject {
     protected SearchQuery mMostRecentAwaitingQuery;
 
 
-    protected PlacesProvider() {
+    protected PlacesProvider(PlacesContext context) {
+        mPlaceContext = context;
+
         mMobilePlatformFactory = MobilePlatformFactoryLocator.getMobilePlatformFactory();
         mEventBus = mMobilePlatformFactory.getEventBus();
 
@@ -111,8 +119,6 @@ public abstract class PlacesProvider extends VanilaObject {
         mOldestSearchPhraseList = mMobilePlatformFactory.newList();
         mRecentSearchResultsMap = mMobilePlatformFactory.newMap();
     }
-
-    public abstract PlacesContext getContext();
 
     public void addCallback(Callback callback) {
         if (!mCallbackList.contains(callback)) {
@@ -182,5 +188,56 @@ public abstract class PlacesProvider extends VanilaObject {
 
     protected boolean isCacheHavingResults(String query) {
         return mRecentSearchResultsMap.containsKey(query);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public PlacesContext getContext() {
+        return mPlaceContext;
+    }
+
+    public void updateContext(PlacesContext context) {
+        if (context != null) {
+            mPlaceContext = context;
+        }
+    }
+
+    protected void persistContext(String entityClass, String entityUuid,
+            PlacesContext placesContext) {
+
+        PlacesDAOFactory daoFactory = mMobilePlatformFactory.getDAOFactory();
+        EntityJsonDAO jsonDAO = daoFactory.getEntityJsonDAO();
+        EntityJsonDTO entityJson = new EntityJsonDTO();
+        entityJson.entity_class = entityClass;
+        entityJson.entity_uuid = entityUuid;
+        entityJson.entity_json = JSONUtils.toJson(placesContext);
+        entityJson.entity_group = PlacesContext.class.getSimpleName();
+        entityJson.entity = placesContext;
+
+        jsonDAO.updateRecordAsync(entityJson);
+    }
+
+    public PlacesContext fetchPlaceContext(String entityUuid) {
+        PlacesDAOFactory daoFactory = mMobilePlatformFactory.getDAOFactory();
+        EntityJsonDAO jsonDAO = daoFactory.getEntityJsonDAO();
+        EntityJsonDTO entityJson = jsonDAO.getRecord(entityUuid);
+
+        PlacesContext result = null;
+        try {
+            result = (PlacesContext) JSONUtils.toDataObject(entityJson.entity_json,
+                    entityJson.entity_class);
+
+            if (result != null) {
+                mPlaceContext = result;
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }
